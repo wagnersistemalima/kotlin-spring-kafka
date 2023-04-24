@@ -1,0 +1,73 @@
+##
+# Server
+# https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.server
+# https://github.com/spring-projects/spring-restdocs/issues/710
+# https://www.baeldung.com/exception-handling-for-rest-with-spring#spring-boot
+# https://reflectoring.io/spring-boot-exception-handling/
+##
+server:
+    error:
+        include-message: always
+        include-binding-errors: always
+        include-stacktrace: on_param
+        include-exception: false
+    port: 8080
+    servlet:
+        context-path: /
+
+##
+# Spring Application
+##
+spring:
+
+    kafka:
+        bootstrap-servers: 127.0.0.1:9092
+        producer:
+            topic: books
+            client-id: book_api
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        consumer:
+            topic: books
+            group-id: book_api
+            auto-offset-reset: earliest
+            enable-auto-commit: false
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "com.sistemalima.kafkaDemo.samples.kafka"
+    output:
+        ansi:
+            enabled: ALWAYS
+    ##
+    # Zalando Problem Spring Web
+    # https://github.com/zalando/problem-spring-web/issues/732
+    ##
+    web:
+        resources:
+            add-mappings: false
+    mvc:
+        throw-exception-if-no-handler-found: true
+
+##
+# Spring Actuator
+# https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints
+##
+management:
+    endpoints:
+        jmx:
+            exposure:
+                include: "*"
+        web:
+            exposure:
+                include: health
+    endpoint:
+        health:
+            show-details: always
+            show-components: always
+            ##
+            # Kubernetes Probes
+            # https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints.kubernetes-probes
+            ##
+            probes:
+                enabled: true
+                add-additional-paths: true
